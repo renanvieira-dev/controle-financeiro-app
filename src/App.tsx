@@ -4,9 +4,8 @@ import { auth } from './firebase';
 import { AuthModal } from './components/AuthModal';
 
 import { 
-  CreditCard, 
   ChevronRight, 
-  ChevronLeft,
+  ChevronLeft, 
   ArrowUpRight, 
   Trash2, 
   X, 
@@ -14,10 +13,10 @@ import {
   Eye, 
   EyeOff, 
   ShoppingBag, 
-  RotateCcw,
+  RotateCcw, 
   CheckCircle2, 
-  Circle,
-  LogOut
+  Circle, 
+  LogOut 
 } from 'lucide-react';
 
 interface Expense {

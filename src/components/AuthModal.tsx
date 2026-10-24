@@ -4,14 +4,9 @@ import {
   signInWithEmailAndPassword 
 } from 'firebase/auth';
 import { auth } from '../firebase';
-import { Lock, Mail, AlertCircle, ArrowRight, X } from 'lucide-react';
+import { Lock, Mail, AlertCircle, ArrowRight } from 'lucide-react';
 
-interface AuthModalProps {
-  onSuccess?: () => void;
-  isInitial?: boolean;
-}
-
-export function AuthModal({ onSuccess, isInitial = false }: AuthModalProps) {
+export function AuthModal() {
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -29,17 +24,16 @@ export function AuthModal({ onSuccess, isInitial = false }: AuthModalProps) {
       } else {
         await signInWithEmailAndPassword(auth, email.trim(), password);
       }
-      if (onSuccess) onSuccess();
     } catch (err: any) {
       switch (err.code) {
         case 'auth/email-already-in-use':
-          setErrorMsg('Este e-mail já está em uso.');
+          setErrorMsg('Este e-mail já está cadastrado.');
           break;
         case 'auth/invalid-email':
-          setErrorMsg('E-mail em formato inválido.');
+          setErrorMsg('Formato de e-mail inválido.');
           break;
         case 'auth/weak-password':
-          setErrorMsg('A senha precisa ter pelo menos 6 caracteres.');
+          setErrorMsg('A senha precisa ter no mínimo 6 caracteres.');
           break;
         case 'auth/invalid-credential':
         case 'auth/wrong-password':
@@ -47,7 +41,7 @@ export function AuthModal({ onSuccess, isInitial = false }: AuthModalProps) {
           setErrorMsg('E-mail ou senha incorretos.');
           break;
         default:
-          setErrorMsg('Ocorreu um erro. Tente novamente mais tarde.');
+          setErrorMsg('Ocorreu um erro ao autenticar. Tente novamente.');
           break;
       }
     } finally {
@@ -56,10 +50,10 @@ export function AuthModal({ onSuccess, isInitial = false }: AuthModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#eef1f6]/80 backdrop-blur-md p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#eef1f6]/90 backdrop-blur-md p-4">
       <div className="w-full max-w-md rounded-[32px] bg-white p-6 sm:p-8 shadow-2xl border border-slate-200/80 animate-in fade-in zoom-in-95 duration-200">
         
-        {/* Topo / Logo */}
+        {/* Logo / Título */}
         <div className="flex flex-col items-center text-center mb-6">
           <div className="h-16 w-16 rounded-[22px] bg-[#ccf638] flex items-center justify-center text-slate-950 font-black text-2xl shadow-sm mb-3">
             $
@@ -69,12 +63,12 @@ export function AuthModal({ onSuccess, isInitial = false }: AuthModalProps) {
           </h2>
           <p className="text-xs text-slate-400 mt-1">
             {isRegistering 
-              ? 'Cadastre-se para sincronizar seus gastos na nuvem' 
-              : 'Entre com seu e-mail e senha para continuar'}
+              ? 'Cadastre seu e-mail para salvar e sincronizar seus gastos' 
+              : 'Entre com suas credenciais para acessar seus dados'}
           </p>
         </div>
 
-        {/* Mensagem de Erro amigável */}
+        {/* Mensagem de Erro */}
         {errorMsg && (
           <div className="mb-4 flex items-center gap-2 rounded-2xl bg-rose-50 border border-rose-200/60 p-3 text-xs font-semibold text-rose-600">
             <AlertCircle className="h-4 w-4 shrink-0" />
@@ -124,7 +118,7 @@ export function AuthModal({ onSuccess, isInitial = false }: AuthModalProps) {
           </button>
         </form>
 
-        {/* Alternador de Modo */}
+        {/* Alternar Cadastro / Login */}
         <div className="mt-6 pt-4 border-t border-slate-100 text-center">
           <button
             type="button"
