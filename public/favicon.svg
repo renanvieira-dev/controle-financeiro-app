@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Gradiente de luz do fundo verde lima -->
+    <linearGradient id="lime-bg" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ccf638" />
+      <stop offset="100%" stop-color="#b2eb1e" />
+    </linearGradient>
+
+    <!-- Sombra suave inferior do cartão (estilo Neofintech) -->
+    <filter id="soft-card-shadow" x="-10%" y="-10%" width="125%" height="130%">
+      <feDropShadow dx="0" dy="16" stdDeviation="16" flood-color="#000000" flood-opacity="0.12" />
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.06" />
+    </filter>
+
+    <!-- Sombra volumétrica do cifrão -->
+    <filter id="symbol-depth" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="7" stdDeviation="4" flood-color="#000000" flood-opacity="0.28" />
+    </filter>
+  </defs>
+
+  <!-- Fundo com cantos arredondados do ícone do App -->
+  <rect x="44" y="44" width="424" height="424" rx="108" ry="108" fill="url(#lime-bg)" filter="url(#soft-card-shadow)" />
+
+  <!-- Símbolo do Cifrão Geométrico Perfeito -->
+  <g filter="url(#symbol-depth)" fill="#141f18">
+    <!-- Haste vertical central contínua -->
+    <rect x="238" y="118" width="36" height="276" rx="18" />
+
+    <!-- Traço curvo do 'S' com pontas arredondadas -->
+    <path d="M 324 200 
+         C 324 165 296 150 256 150 
+         C 214 150 186 168 186 202 
+         C 186 238 214 250 252 258 
+         L 264 261 
+         C 304 270 326 284 326 314 
+         C 326 348 296 362 256 362 
+         C 210 362 182 342 180 306" fill="none" stroke="#141f18" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" />
+  </g>
+</svg>
