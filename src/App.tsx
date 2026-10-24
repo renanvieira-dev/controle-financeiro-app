@@ -5,7 +5,7 @@ import { AuthModal } from './components/AuthModal';
 
 import { 
   ChevronRight, 
-  ChevronLeft,
+  ChevronLeft, 
   ArrowUpRight, 
   Trash2, 
   X, 
@@ -13,12 +13,12 @@ import {
   Eye, 
   EyeOff, 
   ShoppingBag, 
-  RotateCcw,
+  RotateCcw, 
   CheckCircle2, 
-  Circle,
-  LogOut,
-  Sun,
-  Moon
+  Circle, 
+  LogOut, 
+  Sun, 
+  Moon 
 } from 'lucide-react';
 
 interface Expense {
@@ -41,7 +41,6 @@ const MONTH_NAMES = [
 ];
 
 export default function App() {
-  // Controle de Modo Escuro
   const [isDark, setIsDark] = useState<boolean>(() => {
     const saved = localStorage.getItem('orcamento_dark_mode');
     if (saved !== null) return saved === 'true';
@@ -57,15 +56,12 @@ export default function App() {
     localStorage.setItem('orcamento_dark_mode', isDark.toString());
   }, [isDark]);
 
-  // Controle de Autenticação Firebase
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
 
-  // Estados da Aplicação
   const [activeTab, setActiveTab] = useState<'overview' | 'cards'>('overview');
   const [showValues, setShowValues] = useState(true);
 
-  // Mês e Ano Selecionados (Iniciando em Outubro/2026)
   const [currentDate, setCurrentDate] = useState(() => new Date(2026, 9, 1));
   const currentMonthKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
   const currentMonthLabel = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
@@ -103,13 +99,11 @@ export default function App() {
     }
   }, [expenses, currentUser, storagePrefix]);
 
-  // Modais e formulários
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditingIncome, setIsEditingIncome] = useState(false);
   const [tempIncome, setTempIncome] = useState('');
   const [selectedCardFilter, setSelectedCardFilter] = useState<string>('TODOS');
 
-  // Form State
   const [description, setDescription] = useState('');
   const [inputAmount, setInputAmount] = useState('');
   const [amountType, setAmountType] = useState<'total' | 'installment'>('total');
@@ -235,8 +229,8 @@ export default function App() {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#eef1f6] dark:bg-slate-950 flex flex-col items-center justify-center gap-3">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 dark:border-slate-700 border-t-slate-900 dark:border-t-[#c6f432]" />
+      <div className="min-h-screen bg-[#eef1f6] dark:bg-[#090d16] flex flex-col items-center justify-center gap-3">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 dark:border-slate-800 border-t-slate-900 dark:border-t-[#c6f432]" />
         <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Iniciando sessão...</p>
       </div>
     );
@@ -247,15 +241,15 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#eef1f6] dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased selection:bg-[#c6f432] selection:text-black transition-colors duration-200">
+    <div className="min-h-screen bg-[#eef1f6] dark:bg-[#090d16] text-slate-800 dark:text-slate-100 antialiased selection:bg-[#c6f432] selection:text-black transition-colors duration-200">
       
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-5 sm:space-y-6">
 
         {/* CABEÇALHO */}
-        <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-5 py-3.5 rounded-[26px] shadow-sm border border-slate-200/60 dark:border-slate-800/80">
+        <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white/80 dark:bg-[#111827]/90 backdrop-blur-md px-5 py-3.5 rounded-[26px] shadow-sm border border-slate-200/60 dark:border-slate-800/80">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-emerald-400 to-[#c6f432] p-0.5 flex items-center justify-center shadow-sm">
-              <div className="h-full w-full rounded-full bg-white dark:bg-slate-900 flex items-center justify-center font-bold text-slate-900 dark:text-white text-xs">
+              <div className="h-full w-full rounded-full bg-white dark:bg-[#090d16] flex items-center justify-center font-bold text-slate-900 dark:text-white text-xs">
                 {currentUser.email ? currentUser.email.slice(0, 2).toUpperCase() : 'US'}
               </div>
             </div>
@@ -275,7 +269,7 @@ export default function App() {
           </div>
 
           {/* Abas */}
-          <nav className="flex items-center gap-1.5 bg-[#f1f3f7] dark:bg-slate-800/90 p-1.5 rounded-full self-stretch md:self-auto justify-center">
+          <nav className="flex items-center gap-1.5 bg-[#f1f3f7] dark:bg-[#1f293d] p-1.5 rounded-full self-stretch md:self-auto justify-center">
             <button
               onClick={() => setActiveTab('overview')}
               className={`px-6 py-2 text-xs font-bold rounded-full transition-all cursor-pointer ${
@@ -298,12 +292,12 @@ export default function App() {
             </button>
           </nav>
 
-          {/* Controles de Mês, Modo Dark e Ações */}
+          {/* Controles de Mês, Dark Mode e Ações */}
           <div className="flex items-center gap-2 self-end md:self-auto">
-            <div className="flex items-center bg-[#f1f3f7] dark:bg-slate-800 rounded-full p-1 border border-slate-200/50 dark:border-slate-700/50">
+            <div className="flex items-center bg-[#f1f3f7] dark:bg-[#1f293d] rounded-full p-1 border border-slate-200/50 dark:border-slate-700/50">
               <button
                 onClick={handlePrevMonth}
-                className="p-1.5 rounded-full hover:bg-white dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer"
+                className="p-1.5 rounded-full hover:bg-white dark:hover:bg-[#111827] text-slate-600 dark:text-slate-300 transition cursor-pointer"
                 title="Mês Anterior"
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -313,17 +307,16 @@ export default function App() {
               </span>
               <button
                 onClick={handleNextMonth}
-                className="p-1.5 rounded-full hover:bg-white dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer"
+                className="p-1.5 rounded-full hover:bg-white dark:hover:bg-[#111827] text-slate-600 dark:text-slate-300 transition cursor-pointer"
                 title="Próximo Mês"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
 
-            {/* Alternador de Modo Escuro / Claro */}
             <button 
               onClick={() => setIsDark(!isDark)}
-              className="p-2.5 rounded-full bg-[#f1f3f7] dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
+              className="p-2.5 rounded-full bg-[#f1f3f7] dark:bg-[#1f293d] text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
               title={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
             >
               {isDark ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4" />}
@@ -331,7 +324,7 @@ export default function App() {
 
             <button 
               onClick={() => setShowValues(!showValues)}
-              className="p-2.5 rounded-full bg-[#f1f3f7] dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
+              className="p-2.5 rounded-full bg-[#f1f3f7] dark:bg-[#1f293d] text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
               title={showValues ? 'Ocultar valores' : 'Mostrar valores'}
             >
               {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
@@ -339,8 +332,8 @@ export default function App() {
 
             <button
               onClick={handleResetAll}
-              className="p-2.5 rounded-full bg-[#f1f3f7] dark:bg-slate-800 text-slate-400 hover:text-rose-600 transition cursor-pointer"
-              title="Zerar dados deste usuário"
+              className="p-2.5 rounded-full bg-[#f1f3f7] dark:bg-[#1f293d] text-slate-400 hover:text-rose-600 transition cursor-pointer"
+              title="Zerar dados"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
@@ -351,15 +344,15 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
           
           {/* Card Saldo da Conta Principal */}
-          <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-sm border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between relative overflow-hidden">
+          <div className="lg:col-span-7 bg-white dark:bg-[#111827] rounded-[28px] p-6 sm:p-7 shadow-sm border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between relative overflow-hidden">
             <div>
               <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 bg-[#f1f3f7] dark:bg-slate-800 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300">
+                <span className="inline-flex items-center gap-1.5 bg-[#f1f3f7] dark:bg-[#1f293d] px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300">
                   Conta Corrente (BRL)
                 </span>
                 
                 {isEditingIncome ? (
-                  <div className="flex items-center gap-1 bg-[#f1f3f7] dark:bg-slate-800 p-1 rounded-full border border-slate-300 dark:border-slate-700">
+                  <div className="flex items-center gap-1 bg-[#f1f3f7] dark:bg-[#1f293d] p-1 rounded-full border border-slate-300 dark:border-slate-700">
                     <span className="text-xs font-medium text-slate-400 pl-2">R$</span>
                     <input
                       type="number"
@@ -397,7 +390,7 @@ export default function App() {
               <div className="mt-6">
                 <span className="text-xs font-medium text-slate-400 dark:text-slate-500 tracking-wide uppercase">Saldo Disponível no Mês</span>
                 <div className="flex items-center gap-3 mt-1">
-                  <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white">
+                  <h2 className={`text-3xl sm:text-5xl font-extrabold tracking-tight ${remainingBudget < 0 ? 'text-rose-500' : 'text-slate-950 dark:text-white'}`}>
                     {formatCurrency(remainingBudget)}
                   </h2>
                   <button 
@@ -424,7 +417,7 @@ export default function App() {
                   setTempIncome(monthlyIncome > 0 ? monthlyIncome.toString() : '');
                   setIsEditingIncome(true);
                 }}
-                className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 px-5 py-3 rounded-full text-xs font-bold transition-all active:scale-[0.98] cursor-pointer"
+                className="flex items-center gap-2 bg-white dark:bg-[#1f293d] border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 px-5 py-3 rounded-full text-xs font-bold transition-all active:scale-[0.98] cursor-pointer"
               >
                 <span>Ajustar Renda</span>
               </button>
@@ -439,8 +432,8 @@ export default function App() {
             </div>
           </div>
 
-          {/* Card Cartões de Crédito (Verde Lima) */}
-          <div className="lg:col-span-5 bg-[#c6f432] rounded-[28px] p-6 sm:p-7 shadow-sm text-slate-950 flex flex-col justify-between relative overflow-hidden">
+          {/* Card Cartões de Crédito (com suporte harmonizado a dark mode) */}
+          <div className="lg:col-span-5 bg-[#c6f432] dark:bg-[#c6f432] rounded-[28px] p-6 sm:p-7 shadow-sm text-slate-950 flex flex-col justify-between relative overflow-hidden">
             <div>
               <div className="flex items-center justify-between">
                 <span className="bg-slate-950 text-white text-[11px] font-extrabold px-3 py-1.5 rounded-full uppercase tracking-wider flex items-center gap-1.5">
@@ -455,7 +448,7 @@ export default function App() {
                   <h3 className="text-3xl sm:text-4xl font-black tracking-tight text-slate-950">
                     {formatCurrency(totalCardsSpent)}
                   </h3>
-                  <span className="text-xs font-bold bg-white/60 px-2.5 py-0.5 rounded-full text-slate-800">
+                  <span className="text-xs font-bold bg-white/70 px-2.5 py-0.5 rounded-full text-slate-900">
                     {monthCardExpenses.length} parcelas ativas
                   </span>
                 </div>
@@ -463,7 +456,7 @@ export default function App() {
             </div>
 
             {/* Fatura por Banco */}
-            <div className="mt-6 grid grid-cols-2 gap-2 pt-4 border-t border-slate-950/10">
+            <div className="mt-6 grid grid-cols-2 gap-2 pt-4 border-t border-slate-950/15">
               {(['Nubank', 'Itaú', 'Inter', 'BV'] as const).map((banco) => {
                 const subTotal = monthCardExpenses
                   .filter((e) => e.cardName === banco)
@@ -476,11 +469,11 @@ export default function App() {
                       setSelectedCardFilter(banco);
                       setActiveTab('cards');
                     }}
-                    className="bg-white/80 hover:bg-white backdrop-blur-xs rounded-2xl p-2.5 flex items-center justify-between text-left transition cursor-pointer"
+                    className="bg-white/90 hover:bg-white backdrop-blur-xs rounded-2xl p-2.5 flex items-center justify-between text-left transition cursor-pointer shadow-2xs"
                   >
                     <div>
                       <p className="text-[10px] font-bold text-slate-500 uppercase">{banco}</p>
-                      <p className="text-xs font-extrabold text-slate-900">{formatCurrency(subTotal)}</p>
+                      <p className="text-xs font-extrabold text-slate-950">{formatCurrency(subTotal)}</p>
                     </div>
                     <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
                   </button>
@@ -496,7 +489,7 @@ export default function App() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
             
             {/* Card Consumo Atual */}
-            <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-[28px] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between">
+            <div className="lg:col-span-4 bg-white dark:bg-[#111827] rounded-[28px] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="h-4 w-4 text-slate-400" />
@@ -543,18 +536,18 @@ export default function App() {
                   <span>Já Pago/Liquidado:</span>
                   <b className="text-emerald-600 dark:text-emerald-400 font-bold">{formatCurrency(totalPaid)}</b>
                 </div>
-                <div className="bg-[#f8f9fb] dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
+                <div className="bg-[#f8f9fb] dark:bg-[#182234] p-3 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
                   <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                     {monthlyIncome > 0 && remainingBudget >= 0 
-                      ? `Você possui ${formatCurrency(remainingBudget)} disponíveis para gastar neste mês.`
-                      : 'Atenção: Defina sua renda ou os gastos ultrapassaram a receita prevista.'}
+                      ? `Tem ${formatCurrency(remainingBudget)} disponíveis para gastar neste mês.`
+                      : 'Atenção: Os gastos ultrapassaram a renda prevista deste mês.'}
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Card Transações */}
-            <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-[28px] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between">
+            {/* Card Transações com Cores Corrigidas no Modo Escuro */}
+            <div className="lg:col-span-8 bg-white dark:bg-[#111827] rounded-[28px] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -563,7 +556,7 @@ export default function App() {
                   </div>
                   <button 
                     onClick={() => setIsModalOpen(true)}
-                    className="text-xs font-bold text-slate-900 dark:text-white hover:underline flex items-center gap-1 cursor-pointer bg-[#f1f3f7] dark:bg-slate-800 px-3 py-1.5 rounded-full"
+                    className="text-xs font-bold text-slate-900 dark:text-white hover:underline flex items-center gap-1 cursor-pointer bg-[#f1f3f7] dark:bg-[#1f293d] px-3 py-1.5 rounded-full"
                   >
                     <Plus className="h-3.5 w-3.5" /> Adicionar
                   </button>
@@ -584,10 +577,10 @@ export default function App() {
                     monthExpenses.map((expense) => (
                       <div
                         key={expense.id}
-                        className={`group flex items-center justify-between p-3 rounded-2xl transition border ${
+                        className={`group flex items-center justify-between p-3.5 rounded-2xl transition border ${
                           expense.paid 
-                            ? 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800/50 opacity-75' 
-                            : 'bg-[#fcfdfe] dark:bg-slate-850/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
+                            ? 'bg-slate-50/70 dark:bg-[#162032]/50 border-slate-200/60 dark:border-slate-800/50 opacity-60' 
+                            : 'bg-white dark:bg-[#1a2436] border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 shadow-2xs'
                         }`}
                       >
                         <div className="flex items-center gap-3 min-w-0">
@@ -604,16 +597,16 @@ export default function App() {
                           </button>
 
                           <div className="min-w-0">
-                            <p className={`text-xs font-bold truncate ${expense.paid ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-900 dark:text-white'}`}>
+                            <p className={`text-xs font-bold truncate ${expense.paid ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-900 dark:text-slate-100'}`}>
                               {expense.description}
                             </p>
-                            <p className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1.5 flex-wrap">
+                            <p className="text-[11px] text-slate-400 dark:text-slate-400 flex items-center gap-1.5 flex-wrap mt-0.5">
                               {expense.isCreditCard ? (
-                                <span className="font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                                <span className="font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-[#28364f] px-2 py-0.5 rounded-md">
                                   {expense.cardName} • Parcela {expense.installmentCurrent}/{expense.installmentTotal}
                                 </span>
                               ) : (
-                                <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md text-slate-600 dark:text-slate-300">Débito / Pix</span>
+                                <span className="bg-slate-100 dark:bg-[#28364f] px-2 py-0.5 rounded-md text-slate-600 dark:text-slate-300">Débito / Pix</span>
                               )}
                               <span>• {expense.date.split('-').reverse().join('/')}</span>
                             </p>
@@ -622,10 +615,10 @@ export default function App() {
 
                         <div className="flex items-center gap-3 text-right shrink-0">
                           <div className="flex flex-col items-end">
-                            <span className="text-xs font-extrabold text-slate-900 dark:text-white">
+                            <span className="text-xs font-extrabold text-slate-900 dark:text-slate-100">
                               - {formatCurrency(expense.amount)}
                             </span>
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5 ${
                               expense.paid 
                                 ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400' 
                                 : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
@@ -636,8 +629,8 @@ export default function App() {
 
                           <button
                             onClick={() => handleDeleteExpense(expense)}
-                            className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-500 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
-                            title="Excluir"
+                            className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-500 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-[#243147] transition cursor-pointer"
+                            title="Eliminar"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -657,14 +650,14 @@ export default function App() {
           </div>
         ) : (
           /* ABA CARTÕES */
-          <div className="bg-white dark:bg-slate-900 rounded-[28px] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800/80 space-y-5">
+          <div className="bg-white dark:bg-[#111827] rounded-[28px] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800/80 space-y-5">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
                 <h2 className="text-base font-bold text-slate-900 dark:text-white">Faturas e Parcelas ({currentMonthLabel})</h2>
                 <p className="text-xs text-slate-400 dark:text-slate-500">Selecione um banco para filtrar os lançamentos</p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-1.5 bg-[#f1f3f7] dark:bg-slate-800 p-1.5 rounded-full">
+              <div className="flex flex-wrap items-center gap-1.5 bg-[#f1f3f7] dark:bg-[#1f293d] p-1.5 rounded-full">
                 {['TODOS', 'Nubank', 'Itaú', 'Inter', 'BV'].map((item) => (
                   <button
                     key={item}
@@ -705,18 +698,18 @@ export default function App() {
                           )}
                         </button>
                         <div>
-                          <p className={`font-bold text-sm ${exp.paid ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-900 dark:text-white'}`}>
+                          <p className={`font-bold text-sm ${exp.paid ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-900 dark:text-slate-100'}`}>
                             {exp.description}
                           </p>
-                          <p className="text-slate-400 dark:text-slate-500">
-                            {exp.cardName} • Parcela <b className="text-slate-700 dark:text-slate-300">{exp.installmentCurrent}/{exp.installmentTotal}</b> • Data: {exp.date.split('-').reverse().join('/')}
+                          <p className="text-slate-400 dark:text-slate-400">
+                            {exp.cardName} • Parcela <b className="text-slate-700 dark:text-slate-200">{exp.installmentCurrent}/{exp.installmentTotal}</b> • Data: {exp.date.split('-').reverse().join('/')}
                           </p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <span className="font-extrabold text-slate-900 dark:text-white text-sm">
+                          <span className="font-extrabold text-slate-900 dark:text-slate-100 text-sm">
                             {formatCurrency(exp.amount)}
                           </span>
                           <p className={`text-[10px] font-bold ${exp.paid ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
@@ -726,7 +719,7 @@ export default function App() {
                         <button
                           onClick={() => handleDeleteExpense(exp)}
                           className="text-slate-400 hover:text-rose-500 cursor-pointer p-1"
-                          title="Excluir"
+                          title="Eliminar"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -751,8 +744,8 @@ export default function App() {
 
       {/* MODAL DE NOVO LANÇAMENTO */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-xs p-0 sm:p-4">
-          <div className="w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-2xl space-y-5 animate-in slide-in-from-bottom duration-200 border border-slate-100 dark:border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 dark:bg-black/70 backdrop-blur-xs p-0 sm:p-4">
+          <div className="w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] bg-white dark:bg-[#111827] p-6 sm:p-8 shadow-2xl space-y-5 animate-in slide-in-from-bottom duration-200 border border-slate-100 dark:border-slate-800">
             
             <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
@@ -761,7 +754,7 @@ export default function App() {
               </div>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="h-8 w-8 rounded-full bg-[#f1f3f7] dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
+                className="h-8 w-8 rounded-full bg-[#f1f3f7] dark:bg-[#1f293d] flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -773,10 +766,10 @@ export default function App() {
                 <input 
                   type="text" 
                   required
-                  placeholder="Ex: Tênis Nike, Mercado Mensal, Farmácia"
+                  placeholder="Ex: Ténis Nike, Mercado Mensal, Farmácia"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full rounded-2xl bg-[#f8f9fb] dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-slate-900 dark:focus:border-slate-600 transition"
+                  className="w-full rounded-2xl bg-[#f8f9fb] dark:bg-[#090d16] border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-slate-900 dark:focus:border-[#c6f432] transition"
                 />
               </div>
 
@@ -788,7 +781,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setAmountType(amountType === 'total' ? 'installment' : 'total')}
-                        className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 underline"
+                        className="text-[10px] font-bold text-emerald-600 dark:text-[#c6f432] underline"
                       >
                         {amountType === 'total' ? 'Total' : 'Por Parcela'}
                       </button>
@@ -801,7 +794,7 @@ export default function App() {
                     placeholder="0,00"
                     value={inputAmount}
                     onChange={(e) => setInputAmount(e.target.value)}
-                    className="w-full rounded-2xl bg-[#f8f9fb] dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-slate-900 dark:focus:border-slate-600 transition"
+                    className="w-full rounded-2xl bg-[#f8f9fb] dark:bg-[#090d16] border border-slate-200 dark:border-slate-700 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-slate-900 dark:focus:border-[#c6f432] transition"
                   />
                 </div>
 
@@ -812,7 +805,7 @@ export default function App() {
                     required
                     value={expenseDate}
                     onChange={(e) => setExpenseDate(e.target.value)}
-                    className="w-full rounded-2xl bg-[#f8f9fb] dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3.5 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-slate-900 dark:focus:border-slate-600 transition"
+                    className="w-full rounded-2xl bg-[#f8f9fb] dark:bg-[#090d16] border border-slate-200 dark:border-slate-700 px-3.5 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-slate-900 dark:focus:border-[#c6f432] transition"
                   />
                 </div>
               </div>
@@ -836,7 +829,7 @@ export default function App() {
                       <select 
                         value={cardName}
                         onChange={(e) => setCardName(e.target.value as any)}
-                        className="w-full rounded-xl bg-[#f8f9fb] dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white outline-none cursor-pointer"
+                        className="w-full rounded-xl bg-[#f8f9fb] dark:bg-[#090d16] border border-slate-200 dark:border-slate-700 px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white outline-none cursor-pointer"
                       >
                         <option value="Nubank">Nubank</option>
                         <option value="Itaú">Itaú</option>
@@ -854,12 +847,12 @@ export default function App() {
                         required
                         value={installmentTotal}
                         onChange={(e) => setInstallmentTotal(e.target.value)}
-                        className="w-full rounded-xl bg-[#f8f9fb] dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2 text-xs text-center font-bold text-slate-900 dark:text-white outline-none"
+                        className="w-full rounded-xl bg-[#f8f9fb] dark:bg-[#090d16] border border-slate-200 dark:border-slate-700 px-3 py-2 text-xs text-center font-bold text-slate-900 dark:text-white outline-none"
                         placeholder="Ex: 3"
                       />
                     </div>
 
-                    <div className="col-span-2 bg-[#f8f9fb] dark:bg-slate-950/80 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
+                    <div className="col-span-2 bg-[#f8f9fb] dark:bg-[#090d16] p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
                       ℹ️ O app agendará automaticamente 1 parcela por mês a partir de <b>{expenseDate.split('-').reverse().join('/')}</b>.
                     </div>
                   </div>
