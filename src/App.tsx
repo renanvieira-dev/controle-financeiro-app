@@ -5,7 +5,7 @@ import { AuthModal } from './components/AuthModal';
 
 import { 
   ChevronRight, 
-  ChevronLeft, 
+  ChevronLeft,
   ArrowUpRight, 
   Trash2, 
   X, 
@@ -13,10 +13,12 @@ import {
   Eye, 
   EyeOff, 
   ShoppingBag, 
-  RotateCcw, 
+  RotateCcw,
   CheckCircle2, 
-  Circle, 
-  LogOut 
+  Circle,
+  LogOut,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface Expense {
@@ -39,6 +41,22 @@ const MONTH_NAMES = [
 ];
 
 export default function App() {
+  // Controle de Modo Escuro
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    const saved = localStorage.getItem('orcamento_dark_mode');
+    if (saved !== null) return saved === 'true';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  });
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem('orcamento_dark_mode', isDark.toString());
+  }, [isDark]);
+
   // Controle de Autenticação Firebase
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -47,18 +65,16 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<'overview' | 'cards'>('overview');
   const [showValues, setShowValues] = useState(true);
 
-  // Mês e Ano Selecionados (Iniciando no mês atual: Outubro/2026)
+  // Mês e Ano Selecionados (Iniciando em Outubro/2026)
   const [currentDate, setCurrentDate] = useState(() => new Date(2026, 9, 1));
   const currentMonthKey = `${currentDate.getFullYear()}-${String(currentDate.getMonth() + 1).padStart(2, '0')}`;
   const currentMonthLabel = `${MONTH_NAMES[currentDate.getMonth()]} ${currentDate.getFullYear()}`;
 
-  // Persistência local atrelada ao usuário
   const storagePrefix = currentUser ? `user_${currentUser.uid}_` : 'guest_';
 
   const [monthlyIncome, setMonthlyIncome] = useState<number>(0);
   const [expenses, setExpenses] = useState<Expense[]>([]);
 
-  // Carregar dados quando o usuário autenticar
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -75,7 +91,6 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // Salvar no LocalStorage sempre que alterar
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem(`${storagePrefix}income`, monthlyIncome.toString());
@@ -106,7 +121,6 @@ export default function App() {
   const [cardName, setCardName] = useState<'Nubank' | 'Itaú' | 'Inter' | 'BV'>('Nubank');
   const [installmentTotal, setInstallmentTotal] = useState('1');
 
-  // Navegação entre meses
   const handlePrevMonth = () => {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
   };
@@ -115,10 +129,8 @@ export default function App() {
     setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
   };
 
-  // Filtrar despesas do mês selecionado
   const monthExpenses = expenses.filter((e) => e.monthKey === currentMonthKey);
 
-  // Cálculos do Mês
   const totalSpent = monthExpenses.reduce((acc, curr) => acc + curr.amount, 0);
   const totalPaid = monthExpenses.filter(e => e.paid).reduce((acc, curr) => acc + curr.amount, 0);
   const remainingBudget = monthlyIncome - totalSpent;
@@ -127,7 +139,6 @@ export default function App() {
   const monthCardExpenses = monthExpenses.filter(e => e.isCreditCard);
   const totalCardsSpent = monthCardExpenses.reduce((acc, curr) => acc + curr.amount, 0);
 
-  // Criar Lançamento com projeção automática nos próximos meses se for parcelado
   const handleAddExpense = (e: React.FormEvent) => {
     e.preventDefault();
     const rawVal = parseFloat(inputAmount.replace(',', '.'));
@@ -222,43 +233,41 @@ export default function App() {
 
   const strokeDashoffset = 251.2 - (251.2 * Math.min(Number(spentPercent), 100)) / 100;
 
-  // Tela de Carregamento inicial do Firebase
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-[#eef1f6] flex flex-col items-center justify-center gap-3">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 border-t-slate-900" />
-        <p className="text-xs font-semibold text-slate-500">Iniciando sessão...</p>
+      <div className="min-h-screen bg-[#eef1f6] dark:bg-slate-950 flex flex-col items-center justify-center gap-3">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-slate-300 dark:border-slate-700 border-t-slate-900 dark:border-t-[#c6f432]" />
+        <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">Iniciando sessão...</p>
       </div>
     );
   }
 
-  // Se não estiver logado, exibe o Modal de Login/Cadastro
   if (!currentUser) {
     return <AuthModal />;
   }
 
   return (
-    <div className="min-h-screen bg-[#eef1f6] text-slate-800 antialiased selection:bg-[#c6f432] selection:text-black">
+    <div className="min-h-screen bg-[#eef1f6] dark:bg-slate-950 text-slate-800 dark:text-slate-100 antialiased selection:bg-[#c6f432] selection:text-black transition-colors duration-200">
       
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8 space-y-5 sm:space-y-6">
 
         {/* CABEÇALHO */}
-        <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white/80 backdrop-blur-md px-5 py-3.5 rounded-[26px] shadow-sm border border-slate-200/60">
+        <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-5 py-3.5 rounded-[26px] shadow-sm border border-slate-200/60 dark:border-slate-800/80">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-full bg-gradient-to-tr from-emerald-400 to-[#c6f432] p-0.5 flex items-center justify-center shadow-sm">
-              <div className="h-full w-full rounded-full bg-white flex items-center justify-center font-bold text-slate-900 text-xs">
+              <div className="h-full w-full rounded-full bg-white dark:bg-slate-900 flex items-center justify-center font-bold text-slate-900 dark:text-white text-xs">
                 {currentUser.email ? currentUser.email.slice(0, 2).toUpperCase() : 'US'}
               </div>
             </div>
             <div>
-              <p className="text-[11px] text-slate-400 font-medium">Logado como</p>
-              <h1 className="text-sm font-bold text-slate-900 truncate max-w-[170px] sm:max-w-[220px]">
+              <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Logado como</p>
+              <h1 className="text-sm font-bold text-slate-900 dark:text-white truncate max-w-[170px] sm:max-w-[220px]">
                 {currentUser.email}
               </h1>
             </div>
             <button
               onClick={handleSignOut}
-              className="p-1.5 rounded-full hover:bg-rose-50 text-slate-400 hover:text-rose-500 transition cursor-pointer"
+              className="p-1.5 rounded-full hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-400 hover:text-rose-500 transition cursor-pointer"
               title="Sair da conta"
             >
               <LogOut className="h-4 w-4" />
@@ -266,13 +275,13 @@ export default function App() {
           </div>
 
           {/* Abas */}
-          <nav className="flex items-center gap-1.5 bg-[#f1f3f7] p-1.5 rounded-full self-stretch md:self-auto justify-center">
+          <nav className="flex items-center gap-1.5 bg-[#f1f3f7] dark:bg-slate-800/90 p-1.5 rounded-full self-stretch md:self-auto justify-center">
             <button
               onClick={() => setActiveTab('overview')}
               className={`px-6 py-2 text-xs font-bold rounded-full transition-all cursor-pointer ${
                 activeTab === 'overview'
                   ? 'bg-[#c6f432] text-slate-950 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-900'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Visão Geral
@@ -282,38 +291,47 @@ export default function App() {
               className={`px-6 py-2 text-xs font-bold rounded-full transition-all cursor-pointer ${
                 activeTab === 'cards'
                   ? 'bg-[#c6f432] text-slate-950 shadow-sm'
-                  : 'text-slate-500 hover:text-slate-900'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Cartões
             </button>
           </nav>
 
-          {/* Controles de Mês e Ações */}
+          {/* Controles de Mês, Modo Dark e Ações */}
           <div className="flex items-center gap-2 self-end md:self-auto">
-            <div className="flex items-center bg-[#f1f3f7] rounded-full p-1 border border-slate-200/50">
+            <div className="flex items-center bg-[#f1f3f7] dark:bg-slate-800 rounded-full p-1 border border-slate-200/50 dark:border-slate-700/50">
               <button
                 onClick={handlePrevMonth}
-                className="p-1.5 rounded-full hover:bg-white text-slate-600 transition cursor-pointer"
+                className="p-1.5 rounded-full hover:bg-white dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer"
                 title="Mês Anterior"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
-              <span className="text-xs font-bold px-3 text-slate-800 min-w-[110px] text-center">
+              <span className="text-xs font-bold px-3 text-slate-800 dark:text-slate-200 min-w-[110px] text-center">
                 {currentMonthLabel}
               </span>
               <button
                 onClick={handleNextMonth}
-                className="p-1.5 rounded-full hover:bg-white text-slate-600 transition cursor-pointer"
+                className="p-1.5 rounded-full hover:bg-white dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 transition cursor-pointer"
                 title="Próximo Mês"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
             </div>
 
+            {/* Alternador de Modo Escuro / Claro */}
+            <button 
+              onClick={() => setIsDark(!isDark)}
+              className="p-2.5 rounded-full bg-[#f1f3f7] dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
+              title={isDark ? 'Ativar modo claro' : 'Ativar modo escuro'}
+            >
+              {isDark ? <Sun className="h-4 w-4 text-amber-400" /> : <Moon className="h-4 w-4" />}
+            </button>
+
             <button 
               onClick={() => setShowValues(!showValues)}
-              className="p-2.5 rounded-full bg-[#f1f3f7] text-slate-600 hover:text-slate-900 transition cursor-pointer"
+              className="p-2.5 rounded-full bg-[#f1f3f7] dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
               title={showValues ? 'Ocultar valores' : 'Mostrar valores'}
             >
               {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
@@ -321,7 +339,7 @@ export default function App() {
 
             <button
               onClick={handleResetAll}
-              className="p-2.5 rounded-full bg-[#f1f3f7] text-slate-400 hover:text-rose-600 transition cursor-pointer"
+              className="p-2.5 rounded-full bg-[#f1f3f7] dark:bg-slate-800 text-slate-400 hover:text-rose-600 transition cursor-pointer"
               title="Zerar dados deste usuário"
             >
               <RotateCcw className="h-4 w-4" />
@@ -333,15 +351,15 @@ export default function App() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
           
           {/* Card Saldo da Conta Principal */}
-          <div className="lg:col-span-7 bg-white rounded-[28px] p-6 sm:p-7 shadow-sm border border-slate-200/60 flex flex-col justify-between relative overflow-hidden">
+          <div className="lg:col-span-7 bg-white dark:bg-slate-900 rounded-[28px] p-6 sm:p-7 shadow-sm border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between relative overflow-hidden">
             <div>
               <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 bg-[#f1f3f7] px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700">
+                <span className="inline-flex items-center gap-1.5 bg-[#f1f3f7] dark:bg-slate-800 px-3.5 py-1.5 rounded-full text-xs font-bold text-slate-700 dark:text-slate-300">
                   Conta Corrente (BRL)
                 </span>
                 
                 {isEditingIncome ? (
-                  <div className="flex items-center gap-1 bg-[#f1f3f7] p-1 rounded-full border border-slate-300">
+                  <div className="flex items-center gap-1 bg-[#f1f3f7] dark:bg-slate-800 p-1 rounded-full border border-slate-300 dark:border-slate-700">
                     <span className="text-xs font-medium text-slate-400 pl-2">R$</span>
                     <input
                       type="number"
@@ -349,7 +367,7 @@ export default function App() {
                       placeholder="0,00"
                       value={tempIncome}
                       onChange={(e) => setTempIncome(e.target.value)}
-                      className="w-24 text-xs font-bold bg-transparent outline-none text-slate-900"
+                      className="w-24 text-xs font-bold bg-transparent outline-none text-slate-900 dark:text-white"
                       autoFocus
                     />
                     <button
@@ -365,10 +383,10 @@ export default function App() {
                       setTempIncome(monthlyIncome > 0 ? monthlyIncome.toString() : '');
                       setIsEditingIncome(true);
                     }}
-                    className="text-xs text-slate-400 hover:text-slate-700 transition cursor-pointer"
+                    className="text-xs text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 transition cursor-pointer"
                   >
                     Renda do Mês:{' '}
-                    <b className={monthlyIncome > 0 ? 'text-slate-900 font-extrabold' : 'text-amber-600 underline'}>
+                    <b className={monthlyIncome > 0 ? 'text-slate-900 dark:text-white font-extrabold' : 'text-amber-600 underline'}>
                       {monthlyIncome > 0 ? formatCurrency(monthlyIncome) : 'Cadastrar Renda'}
                     </b>{' '}
                     ✎
@@ -377,14 +395,14 @@ export default function App() {
               </div>
 
               <div className="mt-6">
-                <span className="text-xs font-medium text-slate-400 tracking-wide uppercase">Saldo Disponível no Mês</span>
+                <span className="text-xs font-medium text-slate-400 dark:text-slate-500 tracking-wide uppercase">Saldo Disponível no Mês</span>
                 <div className="flex items-center gap-3 mt-1">
-                  <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950">
+                  <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 dark:text-white">
                     {formatCurrency(remainingBudget)}
                   </h2>
                   <button 
                     onClick={() => setShowValues(!showValues)} 
-                    className="text-slate-400 hover:text-slate-600 transition cursor-pointer"
+                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition cursor-pointer"
                   >
                     {showValues ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                   </button>
@@ -395,7 +413,7 @@ export default function App() {
             <div className="mt-8 flex flex-wrap items-center gap-3">
               <button
                 onClick={() => setIsModalOpen(true)}
-                className="flex items-center gap-2 bg-[#122319] hover:bg-slate-900 text-white px-5 py-3 rounded-full text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
+                className="flex items-center gap-2 bg-[#122319] dark:bg-[#c6f432] hover:bg-slate-900 dark:hover:bg-[#b5e628] text-white dark:text-slate-950 px-5 py-3 rounded-full text-xs font-bold transition-all shadow-md active:scale-95 cursor-pointer"
               >
                 <Plus className="h-4 w-4" />
                 <span>Novo Lançamento</span>
@@ -406,7 +424,7 @@ export default function App() {
                   setTempIncome(monthlyIncome > 0 ? monthlyIncome.toString() : '');
                   setIsEditingIncome(true);
                 }}
-                className="flex items-center gap-2 bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 px-5 py-3 rounded-full text-xs font-bold transition-all active:scale-[0.98] cursor-pointer"
+                className="flex items-center gap-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 px-5 py-3 rounded-full text-xs font-bold transition-all active:scale-[0.98] cursor-pointer"
               >
                 <span>Ajustar Renda</span>
               </button>
@@ -478,13 +496,13 @@ export default function App() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6">
             
             {/* Card Consumo Atual */}
-            <div className="lg:col-span-4 bg-white rounded-[28px] p-6 shadow-sm border border-slate-200/60 flex flex-col justify-between">
+            <div className="lg:col-span-4 bg-white dark:bg-slate-900 rounded-[28px] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <ShoppingBag className="h-4 w-4 text-slate-400" />
-                  <h3 className="text-sm font-bold text-slate-900">Consumo em {currentMonthLabel.split(' ')[0]}</h3>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">Consumo em {currentMonthLabel.split(' ')[0]}</h3>
                 </div>
-                <span className="text-xs font-semibold text-slate-400">Tempo Real</span>
+                <span className="text-xs font-semibold text-slate-400 dark:text-slate-500">Tempo Real</span>
               </div>
 
               <div className="my-6 flex flex-col items-center justify-center relative">
@@ -493,7 +511,7 @@ export default function App() {
                     cx="88"
                     cy="88"
                     r="40"
-                    stroke="#f1f3f7"
+                    stroke={isDark ? '#1e293b' : '#f1f3f7'}
                     strokeWidth="10"
                     fill="transparent"
                   />
@@ -511,22 +529,22 @@ export default function App() {
                   />
                 </svg>
                 <div className="absolute flex flex-col items-center justify-center text-center">
-                  <span className="text-2xl font-black text-slate-950">
+                  <span className="text-2xl font-black text-slate-950 dark:text-white">
                     {formatCurrency(totalSpent)}
                   </span>
-                  <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-0.5 rounded-full mt-0.5">
+                  <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 dark:text-emerald-400 px-2.5 py-0.5 rounded-full mt-0.5">
                     {spentPercent}% da renda
                   </span>
                 </div>
               </div>
 
               <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs px-2 text-slate-500">
+                <div className="flex items-center justify-between text-xs px-2 text-slate-500 dark:text-slate-400">
                   <span>Já Pago/Liquidado:</span>
-                  <b className="text-emerald-600 font-bold">{formatCurrency(totalPaid)}</b>
+                  <b className="text-emerald-600 dark:text-emerald-400 font-bold">{formatCurrency(totalPaid)}</b>
                 </div>
-                <div className="bg-[#f8f9fb] p-3 rounded-2xl border border-slate-100 text-center">
-                  <p className="text-xs text-slate-500 font-medium">
+                <div className="bg-[#f8f9fb] dark:bg-slate-800/40 p-3 rounded-2xl border border-slate-100 dark:border-slate-800 text-center">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                     {monthlyIncome > 0 && remainingBudget >= 0 
                       ? `Você possui ${formatCurrency(remainingBudget)} disponíveis para gastar neste mês.`
                       : 'Atenção: Defina sua renda ou os gastos ultrapassaram a receita prevista.'}
@@ -536,28 +554,28 @@ export default function App() {
             </div>
 
             {/* Card Transações */}
-            <div className="lg:col-span-8 bg-white rounded-[28px] p-6 shadow-sm border border-slate-200/60 flex flex-col justify-between">
+            <div className="lg:col-span-8 bg-white dark:bg-slate-900 rounded-[28px] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800/80 flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-sm font-bold text-slate-900">Lançamentos de {currentMonthLabel}</h3>
-                    <p className="text-[11px] text-slate-400">Clique na pílula para marcar como pago ou pendente</p>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">Lançamentos de {currentMonthLabel}</h3>
+                    <p className="text-[11px] text-slate-400 dark:text-slate-500">Clique na pílula para marcar como pago ou pendente</p>
                   </div>
                   <button 
                     onClick={() => setIsModalOpen(true)}
-                    className="text-xs font-bold text-slate-900 hover:underline flex items-center gap-1 cursor-pointer bg-[#f1f3f7] px-3 py-1.5 rounded-full"
+                    className="text-xs font-bold text-slate-900 dark:text-white hover:underline flex items-center gap-1 cursor-pointer bg-[#f1f3f7] dark:bg-slate-800 px-3 py-1.5 rounded-full"
                   >
                     <Plus className="h-3.5 w-3.5" /> Adicionar
                   </button>
                 </div>
 
-                <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
+                <div className="space-y-2.5 max-h-[420px] overflow-y-auto pr-2">
                   {monthExpenses.length === 0 ? (
-                    <div className="py-16 text-center text-slate-400">
+                    <div className="py-16 text-center text-slate-400 dark:text-slate-500">
                       <p className="text-sm font-medium">Nenhum lançamento para {currentMonthLabel}.</p>
                       <button
                         onClick={() => setIsModalOpen(true)}
-                        className="mt-3 text-xs font-bold bg-[#122319] text-white px-4 py-2 rounded-full hover:bg-slate-900 cursor-pointer transition"
+                        className="mt-3 text-xs font-bold bg-[#122319] dark:bg-[#c6f432] text-white dark:text-slate-950 px-4 py-2 rounded-full hover:bg-slate-900 dark:hover:bg-[#b5e628] cursor-pointer transition"
                       >
                         + Cadastrar lançamento
                       </button>
@@ -568,8 +586,8 @@ export default function App() {
                         key={expense.id}
                         className={`group flex items-center justify-between p-3 rounded-2xl transition border ${
                           expense.paid 
-                            ? 'bg-white border-slate-100 opacity-80' 
-                            : 'bg-[#fcfdfe] border-slate-200/80 hover:border-slate-300'
+                            ? 'bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800/50 opacity-75' 
+                            : 'bg-[#fcfdfe] dark:bg-slate-850/50 border-slate-200/80 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700'
                         }`}
                       >
                         <div className="flex items-center gap-3 min-w-0">
@@ -579,23 +597,23 @@ export default function App() {
                             title={expense.paid ? 'Marcar como pendente' : 'Marcar como pago'}
                           >
                             {expense.paid ? (
-                              <CheckCircle2 className="h-5 w-5 text-emerald-500 fill-emerald-50" />
+                              <CheckCircle2 className="h-5 w-5 text-emerald-500 fill-emerald-50 dark:fill-emerald-950/40" />
                             ) : (
-                              <Circle className="h-5 w-5 text-slate-300" />
+                              <Circle className="h-5 w-5 text-slate-300 dark:text-slate-600" />
                             )}
                           </button>
 
                           <div className="min-w-0">
-                            <p className={`text-xs font-bold truncate ${expense.paid ? 'text-slate-500 line-through' : 'text-slate-900'}`}>
+                            <p className={`text-xs font-bold truncate ${expense.paid ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-900 dark:text-white'}`}>
                               {expense.description}
                             </p>
-                            <p className="text-[11px] text-slate-400 flex items-center gap-1.5 flex-wrap">
+                            <p className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-1.5 flex-wrap">
                               {expense.isCreditCard ? (
-                                <span className="font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded-md">
+                                <span className="font-semibold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
                                   {expense.cardName} • Parcela {expense.installmentCurrent}/{expense.installmentTotal}
                                 </span>
                               ) : (
-                                <span className="bg-slate-100 px-2 py-0.5 rounded-md text-slate-600">Débito / Pix</span>
+                                <span className="bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md text-slate-600 dark:text-slate-300">Débito / Pix</span>
                               )}
                               <span>• {expense.date.split('-').reverse().join('/')}</span>
                             </p>
@@ -604,11 +622,13 @@ export default function App() {
 
                         <div className="flex items-center gap-3 text-right shrink-0">
                           <div className="flex flex-col items-end">
-                            <span className="text-xs font-extrabold text-slate-900">
+                            <span className="text-xs font-extrabold text-slate-900 dark:text-white">
                               - {formatCurrency(expense.amount)}
                             </span>
                             <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                              expense.paid ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700'
+                              expense.paid 
+                                ? 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400' 
+                                : 'bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400'
                             }`}>
                               {expense.paid ? 'Pago' : 'Pendente'}
                             </span>
@@ -616,7 +636,7 @@ export default function App() {
 
                           <button
                             onClick={() => handleDeleteExpense(expense)}
-                            className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-500 p-1.5 rounded-lg hover:bg-slate-100 transition cursor-pointer"
+                            className="opacity-0 group-hover:opacity-100 text-slate-400 hover:text-rose-500 p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition cursor-pointer"
                             title="Excluir"
                           >
                             <Trash2 className="h-4 w-4" />
@@ -628,7 +648,7 @@ export default function App() {
                 </div>
               </div>
 
-              <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-400">
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] font-semibold text-slate-400 dark:text-slate-500">
                 <span>{monthExpenses.length} movimentações em {currentMonthLabel}</span>
                 <span>{monthExpenses.filter(e => e.paid).length} pagas • {monthExpenses.filter(e => !e.paid).length} pendentes</span>
               </div>
@@ -637,22 +657,22 @@ export default function App() {
           </div>
         ) : (
           /* ABA CARTÕES */
-          <div className="bg-white rounded-[28px] p-6 shadow-sm border border-slate-200/60 space-y-5">
+          <div className="bg-white dark:bg-slate-900 rounded-[28px] p-6 shadow-sm border border-slate-200/60 dark:border-slate-800/80 space-y-5">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-base font-bold text-slate-900">Faturas e Parcelas ({currentMonthLabel})</h2>
-                <p className="text-xs text-slate-400">Selecione um banco para filtrar os lançamentos</p>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">Faturas e Parcelas ({currentMonthLabel})</h2>
+                <p className="text-xs text-slate-400 dark:text-slate-500">Selecione um banco para filtrar os lançamentos</p>
               </div>
 
-              <div className="flex flex-wrap items-center gap-1.5 bg-[#f1f3f7] p-1.5 rounded-full">
+              <div className="flex flex-wrap items-center gap-1.5 bg-[#f1f3f7] dark:bg-slate-800 p-1.5 rounded-full">
                 {['TODOS', 'Nubank', 'Itaú', 'Inter', 'BV'].map((item) => (
                   <button
                     key={item}
                     onClick={() => setSelectedCardFilter(item)}
                     className={`px-3 py-1 text-xs font-bold rounded-full transition cursor-pointer ${
                       selectedCardFilter === item
-                        ? 'bg-slate-900 text-white shadow-xs'
-                        : 'text-slate-600 hover:text-slate-900'
+                        ? 'bg-slate-900 dark:bg-white text-white dark:text-slate-950 shadow-xs'
+                        : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
                     {item}
@@ -661,11 +681,11 @@ export default function App() {
               </div>
             </div>
 
-            <div className="divide-y divide-slate-100">
+            <div className="divide-y divide-slate-100 dark:divide-slate-800">
               {monthCardExpenses
                 .filter(e => selectedCardFilter === 'TODOS' || e.cardName === selectedCardFilter)
                 .length === 0 ? (
-                <div className="py-16 text-center text-slate-400 text-xs">
+                <div className="py-16 text-center text-slate-400 dark:text-slate-500 text-xs">
                   Nenhuma compra encontrada para este filtro no mês de {currentMonthLabel}.
                 </div>
               ) : (
@@ -679,27 +699,27 @@ export default function App() {
                           className="cursor-pointer"
                         >
                           {exp.paid ? (
-                            <CheckCircle2 className="h-5 w-5 text-emerald-500 fill-emerald-50" />
+                            <CheckCircle2 className="h-5 w-5 text-emerald-500 fill-emerald-50 dark:fill-emerald-950/40" />
                           ) : (
-                            <Circle className="h-5 w-5 text-slate-300" />
+                            <Circle className="h-5 w-5 text-slate-300 dark:text-slate-600" />
                           )}
                         </button>
                         <div>
-                          <p className={`font-bold text-sm ${exp.paid ? 'text-slate-400 line-through' : 'text-slate-900'}`}>
+                          <p className={`font-bold text-sm ${exp.paid ? 'text-slate-400 dark:text-slate-500 line-through' : 'text-slate-900 dark:text-white'}`}>
                             {exp.description}
                           </p>
-                          <p className="text-slate-400">
-                            {exp.cardName} • Parcela <b className="text-slate-700">{exp.installmentCurrent}/{exp.installmentTotal}</b> • Data: {exp.date.split('-').reverse().join('/')}
+                          <p className="text-slate-400 dark:text-slate-500">
+                            {exp.cardName} • Parcela <b className="text-slate-700 dark:text-slate-300">{exp.installmentCurrent}/{exp.installmentTotal}</b> • Data: {exp.date.split('-').reverse().join('/')}
                           </p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <span className="font-extrabold text-slate-900 text-sm">
+                          <span className="font-extrabold text-slate-900 dark:text-white text-sm">
                             {formatCurrency(exp.amount)}
                           </span>
-                          <p className={`text-[10px] font-bold ${exp.paid ? 'text-emerald-600' : 'text-amber-600'}`}>
+                          <p className={`text-[10px] font-bold ${exp.paid ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
                             {exp.paid ? 'Fatura Liquidada' : 'A Vencer'}
                           </p>
                         </div>
@@ -731,17 +751,17 @@ export default function App() {
 
       {/* MODAL DE NOVO LANÇAMENTO */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 backdrop-blur-xs p-0 sm:p-4">
-          <div className="w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] bg-white p-6 sm:p-8 shadow-2xl space-y-5 animate-in slide-in-from-bottom duration-200">
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/40 dark:bg-black/60 backdrop-blur-xs p-0 sm:p-4">
+          <div className="w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] bg-white dark:bg-slate-900 p-6 sm:p-8 shadow-2xl space-y-5 animate-in slide-in-from-bottom duration-200 border border-slate-100 dark:border-slate-800">
             
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div>
-                <h3 className="text-base font-extrabold text-slate-900">Novo Lançamento</h3>
-                <p className="text-[11px] text-slate-400">Compras parceladas serão agendadas nos próximos meses</p>
+                <h3 className="text-base font-extrabold text-slate-900 dark:text-white">Novo Lançamento</h3>
+                <p className="text-[11px] text-slate-400 dark:text-slate-500">Compras parceladas serão agendadas nos próximos meses</p>
               </div>
               <button 
                 onClick={() => setIsModalOpen(false)}
-                className="h-8 w-8 rounded-full bg-[#f1f3f7] flex items-center justify-center text-slate-500 hover:text-slate-900 transition cursor-pointer"
+                className="h-8 w-8 rounded-full bg-[#f1f3f7] dark:bg-slate-800 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -756,7 +776,7 @@ export default function App() {
                   placeholder="Ex: Tênis Nike, Mercado Mensal, Farmácia"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  className="w-full rounded-2xl bg-[#f8f9fb] border border-slate-200 px-4 py-3 text-sm text-slate-900 placeholder-slate-400 outline-none focus:border-slate-900 transition"
+                  className="w-full rounded-2xl bg-[#f8f9fb] dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-slate-900 dark:focus:border-slate-600 transition"
                 />
               </div>
 
@@ -768,7 +788,7 @@ export default function App() {
                       <button
                         type="button"
                         onClick={() => setAmountType(amountType === 'total' ? 'installment' : 'total')}
-                        className="text-[10px] font-bold text-emerald-600 underline"
+                        className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 underline"
                       >
                         {amountType === 'total' ? 'Total' : 'Por Parcela'}
                       </button>
@@ -781,7 +801,7 @@ export default function App() {
                     placeholder="0,00"
                     value={inputAmount}
                     onChange={(e) => setInputAmount(e.target.value)}
-                    className="w-full rounded-2xl bg-[#f8f9fb] border border-slate-200 px-4 py-3 text-sm font-bold text-slate-900 placeholder-slate-400 outline-none focus:border-slate-900 transition"
+                    className="w-full rounded-2xl bg-[#f8f9fb] dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-4 py-3 text-sm font-bold text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 outline-none focus:border-slate-900 dark:focus:border-slate-600 transition"
                   />
                 </div>
 
@@ -792,14 +812,14 @@ export default function App() {
                     required
                     value={expenseDate}
                     onChange={(e) => setExpenseDate(e.target.value)}
-                    className="w-full rounded-2xl bg-[#f8f9fb] border border-slate-200 px-3.5 py-3 text-sm text-slate-900 outline-none focus:border-slate-900 transition"
+                    className="w-full rounded-2xl bg-[#f8f9fb] dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3.5 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-slate-900 dark:focus:border-slate-600 transition"
                   />
                 </div>
               </div>
 
               {/* Cartão de Crédito */}
-              <div className="pt-2 border-t border-slate-100">
-                <label className="flex items-center gap-2.5 text-xs font-bold text-slate-800 cursor-pointer select-none">
+              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                <label className="flex items-center gap-2.5 text-xs font-bold text-slate-800 dark:text-slate-200 cursor-pointer select-none">
                   <input 
                     type="checkbox" 
                     checked={isCreditCard}
@@ -810,13 +830,13 @@ export default function App() {
                 </label>
 
                 {isCreditCard && (
-                  <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-100">
+                  <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <div>
                       <label className="text-[10px] font-bold text-slate-400 uppercase block mb-1">Qual Banco/Cartão?</label>
                       <select 
                         value={cardName}
                         onChange={(e) => setCardName(e.target.value as any)}
-                        className="w-full rounded-xl bg-[#f8f9fb] border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-900 outline-none cursor-pointer"
+                        className="w-full rounded-xl bg-[#f8f9fb] dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2 text-xs font-semibold text-slate-900 dark:text-white outline-none cursor-pointer"
                       >
                         <option value="Nubank">Nubank</option>
                         <option value="Itaú">Itaú</option>
@@ -834,12 +854,12 @@ export default function App() {
                         required
                         value={installmentTotal}
                         onChange={(e) => setInstallmentTotal(e.target.value)}
-                        className="w-full rounded-xl bg-[#f8f9fb] border border-slate-200 px-3 py-2 text-xs text-center font-bold text-slate-900 outline-none"
+                        className="w-full rounded-xl bg-[#f8f9fb] dark:bg-slate-950 border border-slate-200 dark:border-slate-800 px-3 py-2 text-xs text-center font-bold text-slate-900 dark:text-white outline-none"
                         placeholder="Ex: 3"
                       />
                     </div>
 
-                    <div className="col-span-2 bg-[#f8f9fb] p-2.5 rounded-xl border border-slate-100 text-[11px] text-slate-500">
+                    <div className="col-span-2 bg-[#f8f9fb] dark:bg-slate-950/80 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800 text-[11px] text-slate-500 dark:text-slate-400">
                       ℹ️ O app agendará automaticamente 1 parcela por mês a partir de <b>{expenseDate.split('-').reverse().join('/')}</b>.
                     </div>
                   </div>
@@ -849,7 +869,7 @@ export default function App() {
               <div className="pt-2">
                 <button 
                   type="submit"
-                  className="w-full rounded-full bg-[#122319] py-3.5 text-xs font-bold text-white hover:bg-slate-900 active:scale-[0.99] transition shadow-md cursor-pointer"
+                  className="w-full rounded-full bg-[#122319] dark:bg-[#c6f432] py-3.5 text-xs font-bold text-white dark:text-slate-950 hover:bg-slate-900 dark:hover:bg-[#b5e628] active:scale-[0.99] transition shadow-md cursor-pointer"
                 >
                   Confirmar Lançamento
                 </button>
